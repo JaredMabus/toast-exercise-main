@@ -10,8 +10,9 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CloseIcon from '@mui/icons-material/Close';
-import { saveLikedFormSubmission } from './service/mockServer';
-import Chance from "chance"
+import { saveLikedFormSubmission, fetchLikedFormSubmissions } from './service/mockServer';
+import Chance from "chance";
+
 
 export default function Header() {
   const chance = Chance();
@@ -45,9 +46,10 @@ export default function Header() {
 
         // Test response. If status not 202, throw error with error message
         if (res.status === 202) {
-          console.log("Successfully submitted!")
-          console.log(submission)
+          console.log("Successfully submitted!");
+          console.log(submission);
           handleClose();
+          // dispatch(action.updateSubmissions())
         } else {
           throw new Error(res.message)
         }
@@ -67,11 +69,6 @@ export default function Header() {
     setCurrentSubmission(null);
 
   }
-
-  // Log current submission for testing purposes
-  useEffect(() => {
-    console.log(currentSubmission)
-  }, [currentSubmission]);
 
   const action = (
     <React.Fragment>
