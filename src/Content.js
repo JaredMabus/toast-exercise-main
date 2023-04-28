@@ -1,32 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import SubmissionCard from "./SubmissionCard";
-import { fetchLikedFormSubmissions } from './service/mockServer';
 
+export default function Content({ submissions, getSubmissions }) {
 
-export default function Content() {
-  const [submissions, setSubmissions] = useState([]);
-
-  // Get submissions from local storage
-  const getSubmissions = async () => {
-    try {
-      // If res successful, update submissions in state
-      let res = await fetchLikedFormSubmissions()
-      if (res.status === 200) {
-        setSubmissions(res.formSubmissions)
-      } else {
-        throw new Error(res.message);
-      }
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  // Fetch submissions for the server on load
+  // Use custom hook to fetch submissions from the server on load
   useEffect(() => {
-    getSubmissions();
+    try {
+      getSubmissions();
+    } catch (err) {
+      console.log(err)
+    }
   }, []);
 
   return (

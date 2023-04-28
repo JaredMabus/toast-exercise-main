@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -10,11 +9,10 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CloseIcon from '@mui/icons-material/Close';
-import { saveLikedFormSubmission, fetchLikedFormSubmissions } from './service/mockServer';
+import { saveLikedFormSubmission } from './service/mockServer';
 import Chance from "chance";
 
-
-export default function Header() {
+export default function Header({ getSubmissions }) {
   const chance = Chance();
   const [currentSubmission, setCurrentSubmission] = useState(null);
   const [toastStatus, setToastStatus] = useState(false);
@@ -47,13 +45,12 @@ export default function Header() {
         // Test response. If status not 202, throw error with error message
         if (res.status === 202) {
           console.log("Successfully submitted!");
-          console.log(submission);
           handleClose();
-          // dispatch(action.updateSubmissions())
+          // Use custom hook function to update new submissions from server
+          getSubmissions();
         } else {
           throw new Error(res.message)
         }
-
       };
     } catch (err) {
       throw err
@@ -67,7 +64,6 @@ export default function Header() {
     };
     setToastStatus(false);
     setCurrentSubmission(null);
-
   }
 
   const action = (
