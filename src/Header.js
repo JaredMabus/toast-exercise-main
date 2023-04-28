@@ -10,17 +10,15 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import CloseIcon from '@mui/icons-material/Close';
-import { createMockFormSubmission, saveLikedFormSubmission } from './service/mockServer';
+import { saveLikedFormSubmission } from './service/mockServer';
 import Chance from "chance"
-
-
 
 export default function Header() {
   const chance = Chance();
   const [currentSubmission, setCurrentSubmission] = useState(null);
   const [toastStatus, setToastStatus] = useState(false);
 
-  // Set the current submission in state and open toast with the message
+  // Set the current submission in state and open toast with the submission data
   const handleSubmit = async () => {
     let submission = {
       id: chance.guid(),
@@ -35,15 +33,49 @@ export default function Header() {
     setToastStatus(true)
   };
 
+  // Handle save submission
+  const handleSaveSubmission = async () => {
+    try {
+      if (currentSubmission != null) {
+        // Create new local submission var to update data.liked status
+        let submission = { ...currentSubmission, data: { ...currentSubmission.data, liked: true } }
+
+        // Save the submission to local storage with server API
+        let res = await saveLikedFormSubmission(submission);
+
+        // Test response. If status not 202, throw error with error message
+        if (res.status === 202) {
+          console.log("Successfully submitted!")
+          console.log(submission)
+          handleClose();
+        } else {
+          throw new Error(res.message)
+        }
+
+      };
+    } catch (err) {
+      throw err
+    }
+  };
+
   // Handle toast close and clear current submission
-  const handleClose = () => {
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    };
     setToastStatus(false);
     setCurrentSubmission(null);
+
   }
+
+  // Log current submission for testing purposes
+  useEffect(() => {
+    console.log(currentSubmission)
+  }, [currentSubmission]);
 
   const action = (
     <React.Fragment>
-      <Button>Like</Button>
+      <IconButton onClick={handleSaveSubmission}><ThumbUpIcon fontSize="small" sx={{ color: "#fff" }} /></IconButton>
       <IconButton onClick={handleClose}>
         <CloseIcon fontSize="small" sx={{ color: "#fff" }} />
       </IconButton>
